@@ -28,7 +28,6 @@ public class CustomerService implements ICustomerService {
                 .SetLastName(customer.getLastName())
                 .SetEmail(customer.getEmail())
                 .SetPassword(customer.getPassword())
-                .SetContactNumber(customer.getContactNumber())
                 .SetRole("USER")
                 .build();
 
@@ -49,7 +48,6 @@ public class CustomerService implements ICustomerService {
                     .SetLastName(customer.getLastName())
                     .SetEmail(customer.getEmail())
                     .SetPassword(customer.getPassword())
-                    .SetContactNumber(customer.getContactNumber())
                     .SetRole("USER")
                     .build();
 

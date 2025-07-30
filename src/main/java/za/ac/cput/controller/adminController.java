@@ -1,64 +1,83 @@
 package za.ac.cput.controller;
 
-
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import za.ac.cput.domain.Admin;
+import za.ac.cput.factory.adminFactory;
 import za.ac.cput.service.AdminService;
 
 import java.util.List;
 
+@CrossOrigin(origins = "http://localhost:5173")
 @RestController
-@RequestMapping("/admin")
-@CrossOrigin(origins = "http://localhost:8080")
+@RequestMapping("/admins")
 public class adminController {
 
-    private final AdminService service;
 
+    private final AdminService adminService;
     @Autowired
-    public adminController(AdminService service) {
-        this.service = service;
+
+    public adminController(AdminService adminService) {
+        this.adminService = adminService;
     }
 
-    @PostMapping("/create")
-    public ResponseEntity<Admin> addAdmin(@RequestBody Admin admin) {
-        Admin createdAdmin = service.create(admin);
-        return ResponseEntity.status(HttpStatus.CREATED).body(createdAdmin);
-    }
-
-    @GetMapping("/read/{id}")
-    public ResponseEntity<Admin> read(@PathVariable Long id) {
-        Admin admin = service.read(id);
-        return (admin != null)
-                ? ResponseEntity.ok(admin)
-                : ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
-    }
-
-    @PutMapping("/update")
-    public ResponseEntity<Admin> update(@RequestBody Admin admin) {
-        Admin updatedAdmin = service.update(admin);
-        return (updatedAdmin != null)
-                ? ResponseEntity.ok(updatedAdmin)
-                : ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
-    }
-
-    @DeleteMapping("/delete/{id}")
-    public ResponseEntity<String> delete(@PathVariable long id) {
+    @PostMapping("/register")
+    public ResponseEntity<?> register(@RequestBody Admin adminInput) {
         try {
-            service.delete(id);
-            return ResponseEntity.ok("Admin successfully deleted!");
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Admin ID not found.");
+            Admin newAdmin = adminFactory.buildAdmin(
+                    adminInput.getFirstName(),
+                    adminInput.getLastName(),
+                    adminInput.getEmail(),
+                    adminInput.getPassword()
+            );
+
+            if (newAdmin == null) {
+                return ResponseEntity.badRequest().body("Invalid input fields");
+            }
+
+            Admin saved = adminService.create(newAdmin);
+            return ResponseEntity.ok(saved);
+
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
 
-    @GetMapping("/allAdmins")
-    public ResponseEntity<List<Admin>> getAll() {
-        List<Admin> admins = service.getAll();
-        return ResponseEntity.ok(admins);
+
+
+    @PostMapping("/login")
+    private ResponseEntity<String> handleLogin(String token) {
+        if ("fail".equals(token)) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid email or password");
+        }
+        return ResponseEntity.ok(token);
+    }
+
+
+    @GetMapping("/all")
+    public List<Admin> getAll() {
+        return adminService.getAll();
+    }
+
+    @GetMapping("/read/{id}")
+    public Admin read(@PathVariable Long id) {
+        return adminService.read(id);
+    }
+
+    @PostMapping("/update")
+    public Admin update(@RequestBody Admin admin) {
+        return adminService.update(admin);
+    }
+
+    @DeleteMapping("/delete/{id}")
+    public void delete(@PathVariable long id) {
+        adminService.delete(id);
+    }
+
+    @GetMapping("/ping")
+    public String ping() {
+        return "Admin backend is running!";
     }
 }
-

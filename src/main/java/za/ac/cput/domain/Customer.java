@@ -4,7 +4,6 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-
 import java.util.Objects;
 
 @Entity
@@ -16,7 +15,6 @@ public class Customer {
     private String lastName;
     private String email;
     private String password;
-    private String contactNumber;
     private String role  = "USER";
 
 
@@ -28,7 +26,6 @@ public class Customer {
         this.lastName = builder.lastName;
         this.email = builder.email;
         this.password = builder.password;
-        this.contactNumber = builder.contactNumber;
         this.role = builder.role;
 
     }
@@ -54,9 +51,6 @@ public class Customer {
         return password;
     }
 
-    public String getContactNumber() {
-        return contactNumber;
-    }
 
     public String getRole() {return role;}
 
@@ -70,13 +64,12 @@ public class Customer {
                 Objects.equals(lastName, customer.lastName) &&
                 Objects.equals(email, customer.email) &&
                 Objects.equals(password, customer.password) &&
-                Objects.equals(contactNumber, customer.contactNumber) &&
                 Objects.equals(role, customer.role);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, firstName, lastName, email, password, contactNumber, role);
+        return Objects.hash(id, firstName, lastName, email, password, role);
     }
 
     @Override
@@ -87,7 +80,6 @@ public class Customer {
                 ", lastName='" + lastName + '\'' +
                 ", email='" + email + '\'' +
                 ", password='" + password + '\'' +
-                ", contactNumber='" + contactNumber + '\'' +
                 ", role='" + role + '\'' +
                 '}';
     }
@@ -98,7 +90,6 @@ public class Customer {
         private String lastName;
         private String email;
         private String password;
-        private String contactNumber;
         private String role;
 
 
@@ -123,10 +114,7 @@ public class Customer {
             this.password = password;
             return this;
         }
-        public Builder SetContactNumber(String contactNumber) {
-            this.contactNumber = contactNumber;
-            return this;
-        }
+
         public Builder SetRole(String role) {
             this.role = role;
             return this;
@@ -138,7 +126,6 @@ public class Customer {
             this.lastName = customer.lastName;
             this.email = customer.email;
             this.password = customer.password;
-            this.contactNumber = customer.contactNumber;
             this.role = customer.role;
             return this;
         }

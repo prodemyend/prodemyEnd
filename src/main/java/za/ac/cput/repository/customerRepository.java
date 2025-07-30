@@ -6,7 +6,5 @@ import za.ac.cput.domain.Customer;
 
 @Repository
 public interface customerRepository extends JpaRepository<Customer, Long> {
-    static Customer findByEmail(String email) {
-        return null;
-    }
+    Customer findByEmail(String email) ;
 }

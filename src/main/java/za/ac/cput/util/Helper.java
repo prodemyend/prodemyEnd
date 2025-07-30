@@ -23,5 +23,9 @@ public class Helper {
         if (isNullorEmpty(paramValue))
             throw new IllegalArgumentException(String.format("Invalid value for param: %s", paramName));
     }
+
+    public static boolean isNullOrEmpty(String firstName) {
+        return (firstName == null || firstName.isEmpty());
+    }
 }
 

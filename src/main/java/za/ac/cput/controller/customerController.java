@@ -5,13 +5,14 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import za.ac.cput.domain.Customer;
+import za.ac.cput.factory.customerFactory;
 import za.ac.cput.service.CustomerService;
 
 import java.util.List;
 
+@CrossOrigin(origins = "http://localhost:5173")
 @RestController
-@RequestMapping("/api/customers")
-@CrossOrigin(origins = "http://localhost:8080")
+@RequestMapping("/customers")
 public class customerController {
 
     private final CustomerService customerService;
@@ -25,22 +26,36 @@ public class customerController {
 
 
     @PostMapping("/register")
-    public Customer register(@RequestBody Customer customer) {
-        return customerService.create(customer);
-    }
-
-    @PostMapping("/login")
-    public ResponseEntity<String> login(@RequestBody Customer customer) {
+    public ResponseEntity<?> register(@RequestBody Customer customerInput) {
         try {
-            String token = customerService.verify(customer);
-            if ("fail".equals(token)) {
-                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid email or password");
+            Customer newCustomer = customerFactory.buildCustomer(
+                    customerInput.getFirstName(),
+                    customerInput.getLastName(),
+                    customerInput.getEmail(),
+                    customerInput.getPassword()
+            );
+
+            if (newCustomer == null) {
+                return ResponseEntity.badRequest().body("Invalid input fields");
             }
-            return ResponseEntity.ok(token);
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred");
+
+            Customer saved = customerService.create(newCustomer);
+            return ResponseEntity.ok(saved);
+
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
+
+
+    @PostMapping("/login")
+    private ResponseEntity<String> handleLogin(String token) {
+        if ("fail".equals(token)) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid email or password");
+        }
+        return ResponseEntity.ok(token);
+    }
+
 
     @GetMapping("/all")
     public List<Customer> getAll() {

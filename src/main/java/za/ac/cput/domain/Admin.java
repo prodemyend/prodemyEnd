@@ -11,30 +11,27 @@ import java.util.Objects;
 public class Admin {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long adminId;
+    private Long id;
     private String firstName;
     private String lastName;
     private String email;
     private String password;
-    private String confirmPassword;
     private String role = "ADMIN";
 
-    protected Admin() {
-    }
+    public Admin() {}
 
     public Admin(Builder builder) {
-        this.adminId = builder.adminId;
+        this.id = builder.id;
         this.firstName = builder.firstName;
         this.lastName = builder.lastName;
         this.email = builder.email;
         this.password = builder.password;
-        this.confirmPassword = builder.confirmPassword;
         this.role = builder.role;
     }
 
-    // ✅ Getter methods
-    public long getAdminId() {
-        return adminId;
+    // Getters
+    public Long getId() {
+        return id;
     }
 
     public String getFirstName() {
@@ -53,9 +50,6 @@ public class Admin {
         return password;
     }
 
-    public String getConfirmPassword() {
-        return confirmPassword;
-    }
 
     public String getRole() {
         return role;
@@ -63,49 +57,39 @@ public class Admin {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-
         Admin admin = (Admin) o;
-        return adminId == admin.adminId &&
-                Objects.equals(firstName, admin.firstName) &&
-                Objects.equals(lastName, admin.lastName) &&
-                Objects.equals(email, admin.email) &&
-                Objects.equals(password, admin.password) &&
-                Objects.equals(confirmPassword, admin.confirmPassword) &&
-                Objects.equals(role, admin.role);
+        return Objects.equals(id, admin.id) && Objects.equals(firstName, admin.firstName) && Objects.equals(lastName, admin.lastName) && Objects.equals(email, admin.email) && Objects.equals(password, admin.password)  && Objects.equals(role, admin.role);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(adminId, firstName, lastName, email, password, confirmPassword, role);
+        return Objects.hash(id, firstName, lastName, email, password, role);
     }
 
     @Override
     public String toString() {
         return "Admin{" +
-                "adminId=" + adminId +
+                "id=" + id +
                 ", firstName='" + firstName + '\'' +
                 ", lastName='" + lastName + '\'' +
                 ", email='" + email + '\'' +
                 ", password='" + password + '\'' +
-                ", confirmPassword='" + confirmPassword + '\'' +
                 ", role='" + role + '\'' +
                 '}';
     }
 
     // Builder class
     public static class Builder {
-        private long adminId;
+        private Long id;
         private String firstName;
         private String lastName;
         private String email;
         private String password;
-        private String confirmPassword;
         private String role;
 
-        public Builder setAdminId(long adminId) {
-            this.adminId = adminId;
+        public Builder setId(Long id) {
+            this.id = id;
             return this;
         }
 
@@ -129,10 +113,6 @@ public class Admin {
             return this;
         }
 
-        public Builder setConfirmPassword(String confirmPassword) {
-            this.confirmPassword = confirmPassword;
-            return this;
-        }
 
         public Builder setRole(String role) {
             this.role = role;
@@ -140,12 +120,11 @@ public class Admin {
         }
 
         public Builder copy(Admin admin) {
-            this.adminId = admin.adminId;
+            this.id = admin.id;
             this.firstName = admin.firstName;
             this.lastName = admin.lastName;
             this.email = admin.email;
             this.password = admin.password;
-            this.confirmPassword = admin.confirmPassword;
             this.role = admin.role;
             return this;
         }

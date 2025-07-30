@@ -20,12 +20,11 @@ public class AdminService implements IAdminService {
     @Override
     public Admin create(Admin admin) {
         Admin newAdmin = new Admin.Builder()
-                .setAdminId(admin.getAdminId())
+                .setId(admin.getId())
                 .setFirstName(admin.getFirstName())
                 .setLastName(admin.getLastName())
                 .setEmail(admin.getEmail())
                 .setPassword(admin.getPassword())
-                .setConfirmPassword(admin.getConfirmPassword())
                 .setRole("ADMIN")
                 .build();
 
@@ -39,20 +38,19 @@ public class AdminService implements IAdminService {
 
     @Override
     public Admin update(Admin admin) {
-        if (repository.existsById(admin.getAdminId())) {
+        if (repository.existsById(admin.getId())) {
             Admin updatedAdmin = new Admin.Builder()
-                    .setAdminId(admin.getAdminId())
+                    .setId(admin.getId())
                     .setFirstName(admin.getFirstName())
                     .setLastName(admin.getLastName())
                     .setEmail(admin.getEmail())
                     .setPassword(admin.getPassword())
-                    .setConfirmPassword(admin.getConfirmPassword())
                     .setRole("ADMIN")
                     .build();
 
             return repository.save(updatedAdmin);
         } else {
-            System.out.println("Admin with ID " + admin.getAdminId() + " does not exist.");
+            System.out.println("Admin with ID " + admin.getId() + " does not exist.");
             return null;
         }
     }

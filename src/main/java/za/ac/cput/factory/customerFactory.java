@@ -5,14 +5,16 @@ import za.ac.cput.util.Helper;
 
 public class customerFactory {
 
-    public static Customer buildCustomer(String firstName,
-                                         String lastName,
-                                         String email,
-                                         String password,
-                                         String contactNumber) {
+    public static Customer buildCustomer(String firstName, String lastName,
+                                         String email, String password) {
 
-        if (Helper.isNullorEmpty(firstName) || Helper.isNullorEmpty(lastName) || !Helper.isValidEmail(email) || Helper.isNullorEmpty(password) || Helper.isNullorEmpty(contactNumber)) {
+        if (Helper.isNullorEmpty(firstName) || Helper.isNullorEmpty(lastName) ||
+                Helper.isNullorEmpty(email) || Helper.isNullorEmpty(password)) {
             return null;
+        }
+
+        if (!Helper.isValidEmail(email)) {
+            throw new IllegalArgumentException("Invalid email format");
         }
 
         return new Customer.Builder()
@@ -20,7 +22,6 @@ public class customerFactory {
                 .SetLastName(lastName)
                 .SetEmail(email)
                 .SetPassword(password)
-                .SetContactNumber(contactNumber)
                 .SetRole("USER")
                 .build();
     }
