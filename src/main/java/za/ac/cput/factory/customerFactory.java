@@ -18,8 +18,8 @@ public class customerFactory {
         }
 
         return new Customer.Builder()
-                .SetFirstName(firstName)
-                .SetLastName(lastName)
+                .SetfirstName(firstName)
+                .SetlastName(lastName)
                 .SetEmail(email)
                 .SetPassword(password)
                 .SetRole("USER")

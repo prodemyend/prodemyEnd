@@ -4,7 +4,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import za.ac.cput.domain.Admin;
 import za.ac.cput.domain.Customer;
 import za.ac.cput.factory.customerFactory;
 import za.ac.cput.repository.customerRepository;
@@ -52,18 +51,17 @@ public class customerController {
         }
     }
 
-
     @PostMapping("/login")
     public ResponseEntity<?> handleLogin(@RequestBody Customer loginInput) {
         try {
-            Customer customer = customerService.findByEmail(loginInput.getEmail());
+            Customer customer = customerRepository.findByEmail(loginInput.getEmail());
 
             if (customer == null || !customer.getPassword().equals(loginInput.getPassword())) {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                         .body("Invalid email or password");
             }
 
-            return ResponseEntity.ok(customer); // returns full Admin object (you can customize this)
+            return ResponseEntity.ok(customer);
 
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)

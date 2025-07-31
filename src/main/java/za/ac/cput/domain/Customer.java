@@ -98,11 +98,11 @@ public class Customer {
             return this;
         }
 
-        public Builder SetFirstName(String firstName) {
+        public Builder SetfirstName(String firstName) {
             this.firstName = firstName;
             return this;
         }
-        public Builder SetLastName(String lastName) {
+        public Builder SetlastName(String lastName) {
             this.lastName = lastName;
             return this;
         }

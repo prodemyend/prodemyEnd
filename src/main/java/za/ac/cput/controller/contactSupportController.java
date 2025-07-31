@@ -7,9 +7,9 @@ import za.ac.cput.service.ContactSupportService;
 
 import java.util.List;
 
+@CrossOrigin(origins = "http://localhost:5173")
 @RestController
 @RequestMapping("/api")
-@CrossOrigin(origins = "http://localhost:8080")
 public class contactSupportController {
 
     private final ContactSupportService contactSupportService;

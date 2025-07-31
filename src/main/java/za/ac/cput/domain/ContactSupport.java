@@ -37,8 +37,6 @@ public class ContactSupport {
 
 
 
-
-
     public String getEmail() {
         return email;
     }

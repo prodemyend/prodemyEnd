@@ -24,8 +24,8 @@ public class CustomerService implements ICustomerService {
     public Customer create(Customer customer) {
         Customer newCustomer = new Customer.Builder()
                 .setId(customer.getId())
-                .SetFirstName(customer.getFirstName())
-                .SetLastName(customer.getLastName())
+                .SetfirstName(customer.getFirstName())
+                .SetlastName(customer.getLastName())
                 .SetEmail(customer.getEmail())
                 .SetPassword(customer.getPassword())
                 .SetRole("USER")
@@ -44,8 +44,8 @@ public class CustomerService implements ICustomerService {
         if (repository.existsById(customer.getId())) {
             Customer updatedCustomer = new Customer.Builder()
                     .setId(customer.getId())
-                    .SetFirstName(customer.getFirstName())
-                    .SetLastName(customer.getLastName())
+                    .SetfirstName(customer.getFirstName())
+                    .SetlastName(customer.getLastName())
                     .SetEmail(customer.getEmail())
                     .SetPassword(customer.getPassword())
                     .SetRole("USER")
