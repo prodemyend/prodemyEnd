@@ -6,6 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import za.ac.cput.domain.Admin;
 import za.ac.cput.factory.adminFactory;
+import za.ac.cput.repository.adminRepository;
 import za.ac.cput.service.AdminService;
 
 import java.util.List;
@@ -17,10 +18,13 @@ public class adminController {
 
 
     private final AdminService adminService;
+    private final adminRepository adminRepository;
+
     @Autowired
 
-    public adminController(AdminService adminService) {
+    public adminController(AdminService adminService, adminRepository adminRepository) {
         this.adminService = adminService;
+        this.adminRepository = adminRepository;
     }
 
     @PostMapping("/register")
@@ -48,12 +52,23 @@ public class adminController {
 
 
     @PostMapping("/login")
-    private ResponseEntity<String> handleLogin(String token) {
-        if ("fail".equals(token)) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid email or password");
+    public ResponseEntity<?> handleLogin(@RequestBody Admin loginInput) {
+        try {
+            Admin admin = adminRepository.findByEmail(loginInput.getEmail());
+
+            if (admin == null || !admin.getPassword().equals(loginInput.getPassword())) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                        .body("Invalid email or password");
+            }
+
+            return ResponseEntity.ok(admin); // returns full Admin object (you can customize this)
+
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Login error: " + e.getMessage());
         }
-        return ResponseEntity.ok(token);
     }
+
 
 
     @GetMapping("/all")

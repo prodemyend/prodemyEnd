@@ -5,6 +5,6 @@ import org.springframework.stereotype.Repository;
 import za.ac.cput.domain.Customer;
 
 @Repository
-public interface customerRepository extends JpaRepository<Customer, Long> {
+public interface  customerRepository extends JpaRepository<Customer, Long> {
     Customer findByEmail(String email) ;
 }

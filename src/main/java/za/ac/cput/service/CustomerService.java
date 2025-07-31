@@ -77,4 +77,9 @@ public class CustomerService implements ICustomerService {
             return "fail";
         }
     }
+
+    public Customer findByEmail(String email) {
+        Customer foundCustomer = repository.findByEmail(email);
+        return null;
+    }
 }
