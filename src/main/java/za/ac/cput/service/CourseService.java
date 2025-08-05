@@ -3,34 +3,46 @@ package za.ac.cput.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import za.ac.cput.domain.Course;
-import za.ac.cput.repository.CourseReposistory;
+import za.ac.cput.repository.CourseRepository;
 
 import java.util.List;
 import java.util.Optional;
 
 @Service
-public class CourseService {
+public class CourseService implements ICourseService {
 
-    private final CourseReposistory courseRepository;
+    private final CourseRepository repository;
 
     @Autowired
-    public CourseService(CourseReposistory courseRepository) {
-        this.courseRepository = courseRepository;
+    public CourseService(CourseRepository repository) {
+        this.repository = repository;
     }
 
-    public Course createCourse(Course course) {
-        return courseRepository.save(course);
+    @Override
+    public Course create(Course course) {
+        return repository.save(course);
     }
 
-    public List<Course> getAllCourses() {
-        return courseRepository.findAll();
+    @Override
+    public Optional<Course> read(Long id) {
+        return repository.findById(id);
     }
 
-    public Optional<Course> getCourseById(Long id) {
-        return courseRepository.findById(id);
+    @Override
+    public Course update(Course course) {
+        if (course.getId() != null && repository.existsById(course.getId())) {
+            return repository.save(course);
+        }
+        return null;
     }
 
-    public void deleteCourse(Long id) {
-        courseRepository.deleteById(id);
+    @Override
+    public void delete(Long id) {
+        repository.deleteById(id);
+    }
+
+    @Override
+    public List<Course> getAll() {
+        return repository.findAll();
     }
 }

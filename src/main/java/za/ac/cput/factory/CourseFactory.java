@@ -1,17 +1,22 @@
 package za.ac.cput.factory;
+
 import za.ac.cput.domain.Course;
 import za.ac.cput.util.Helper;
 
 public class CourseFactory {
-    public static Course create(String title, String description, String imageUrl) {
-        if (Helper.isNullorEmpty(title) || Helper.isNullorEmpty(description)) {
-            throw new IllegalArgumentException("Title or description cannot be null or empty");
+
+    public static Course buildCourse(String title, String description, byte[] image) {
+        if (Helper.isNullorEmpty(title)
+                || Helper.isNullorEmpty(description)
+                || image == null
+                || image.length == 0) {
+            return null;
         }
 
         return new Course.Builder()
-                .title(title)
-                .description(description)
-                .imageUrl(imageUrl)
+                .setTitle(title)
+                .setDescription(description)
+                .setImage(image)
                 .build();
     }
 }

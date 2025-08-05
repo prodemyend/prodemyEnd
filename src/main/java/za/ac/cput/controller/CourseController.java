@@ -1,17 +1,23 @@
 package za.ac.cput.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import za.ac.cput.domain.Course;
+import za.ac.cput.factory.CourseFactory;
 import za.ac.cput.service.CourseService;
 
+import java.io.IOException;
 import java.util.List;
+import java.util.Optional;
 
-@RestController
-@RequestMapping("/api/courses")
 @CrossOrigin(origins = "http://localhost:5173")
+@RestController
+@RequestMapping("/courses")
 public class CourseController {
 
     private final CourseService courseService;
@@ -21,27 +27,70 @@ public class CourseController {
         this.courseService = courseService;
     }
 
-    @PostMapping("/create")
-    public ResponseEntity<Course> createCourse(@RequestBody Course course) {
-        Course savedCourse = courseService.createCourse(course);
-        return new ResponseEntity<>(savedCourse, HttpStatus.CREATED);
+    @PostMapping(value = "/create", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<?> create(
+            @RequestParam("title") String title,
+            @RequestParam("description") String description,
+            @RequestParam("image") MultipartFile imageFile
+    ) {
+        try {
+            if (imageFile.isEmpty()) {
+                return ResponseEntity.badRequest().body("Image file is required.");
+            }
+
+            byte[] imageBytes = imageFile.getBytes();
+
+            Course course = CourseFactory.buildCourse(title, description, imageBytes);
+            if (course == null) {
+                return ResponseEntity.badRequest().body("Invalid input fields");
+            }
+
+            Course saved = courseService.create(course);
+            return ResponseEntity.ok(saved);
+        } catch (IOException e) {
+            return ResponseEntity.status(500).body("Failed to process image file.");
+        }
     }
 
     @GetMapping("/all")
-    public ResponseEntity<List<Course>> getAllCourses() {
-        return ResponseEntity.ok(courseService.getAllCourses());
+    public List<Course> getAll() {
+        return courseService.getAll();
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Course> getCourseById(@PathVariable Long id) {
-        return courseService.getCourseById(id)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+    public ResponseEntity<?> get(@PathVariable Long id) {
+        Optional<Course> c = courseService.read(id);
+        if (c.isEmpty()) return ResponseEntity.notFound().build();
+        return ResponseEntity.ok(c);
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteCourse(@PathVariable Long id) {
-        courseService.deleteCourse(id);
-        return ResponseEntity.noContent().build();
+    @PutMapping("/update")
+    public ResponseEntity<?> update(@RequestBody Course input) {
+        Course updated = courseService.update(input);
+        if (updated == null) return ResponseEntity.badRequest().body("Course does not exist or invalid");
+        return ResponseEntity.ok(updated);
     }
+
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity<?> delete(@PathVariable Long id) {
+        courseService.delete(id);
+        return ResponseEntity.ok("Deleted");
+    }
+
+    @GetMapping("/ping")
+    public String ping() {
+        return "Course backend running";
+    }
+    @GetMapping("/media/{id}")
+    public ResponseEntity<byte[]> getFile(@PathVariable Long id) {
+        Optional<Course> courseOpt = courseService.read(id);
+        if (courseOpt.isEmpty()) return ResponseEntity.notFound().build();
+
+        Course course = courseOpt.get();
+        byte[] file = course.getImage();
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_OCTET_STREAM); // or detect actual type
+        return new ResponseEntity<>(file, headers, HttpStatus.OK);
+    }
+
 }
