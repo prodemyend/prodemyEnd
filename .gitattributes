@@ -1,0 +1,17 @@
+# Force GitHub to count source code correctly for language stats
+
+# Frontend
+*.html linguist-detectable=true
+*.css linguist-detectable=true
+*.js linguist-detectable=true
+*.vue linguist-detectable=true
+
+# Backend
+*.java linguist-detectable=true
+*.sql linguist-detectable=true
+*.xml linguist-detectable=true
+
+# Optional extras
+*.md linguist-documentation
+*.json linguist-generated
+*.lock linguist-generated
