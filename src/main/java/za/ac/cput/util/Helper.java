@@ -6,10 +6,11 @@ import java.util.UUID;
 import java.util.regex.Pattern;
 
 public class Helper {
-    public static boolean isNullorEmpty (String s){
+    public static boolean isNullorEmpty(String s) {
         return (s == null || s.equals("") || s.isEmpty() || s.equalsIgnoreCase("null"));
     }
-    public static String generateId(){
+
+    public static String generateId() {
         return UUID.randomUUID().toString();
     }
 
@@ -19,13 +20,14 @@ public class Helper {
         return Pattern.compile(regexPattern).matcher(email).matches();
     }
 
-    public static void checkStringParam(String paramName, String paramValue){
+    public static void checkStringParam(String paramName, String paramValue) {
         if (isNullorEmpty(paramValue))
             throw new IllegalArgumentException(String.format("Invalid value for param: %s", paramName));
     }
 
     public static boolean isNullOrEmpty(String firstName) {
         return (firstName == null || firstName.isEmpty());
+
     }
 }
 
