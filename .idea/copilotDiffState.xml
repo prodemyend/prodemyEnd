@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CopilotDiffPersistence">
+    <option name="pendingDiffs">
+      <map>
+        <entry key="$PROJECT_DIR$/src/main/java/za/ac/cput/service/EnrollmentIService.java">
+          <value>
+            <PendingDiffInfo>
+              <option name="filePath" value="$PROJECT_DIR$/src/main/java/za/ac/cput/service/EnrollmentIService.java" />
+              <option name="updatedContent" value="package za.ac.cput.service;&#10;&#10;import za.ac.cput.domain.Enrollment;&#10;&#10;import java.util.List;&#10;import java.util.Optional;&#10;&#10;public interface EnrollmentIService {&#10;&#10;    Enrollment create(Enrollment enrollment);&#10;&#10;    Optional&lt;Enrollment&gt; read(Long id);&#10;&#10;    Enrollment update(Enrollment enrollment);&#10;&#10;    void delete(Long id);&#10;&#10;    List&lt;Enrollment&gt; getAll();&#10;}" />
+            </PendingDiffInfo>
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+</project>
