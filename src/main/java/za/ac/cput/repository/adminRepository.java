@@ -5,7 +5,6 @@ import org.springframework.stereotype.Repository;
 import za.ac.cput.domain.Admin;
 
 @Repository
-public interface  adminRepository extends JpaRepository<Admin, Long> {
-     Admin findByEmail(String email) ;
-    }
-
+public interface adminRepository extends JpaRepository<Admin, Long> {
+    Admin findByEmail(String email);
+}

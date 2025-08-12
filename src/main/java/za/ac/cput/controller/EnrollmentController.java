@@ -1,36 +1,78 @@
 package za.ac.cput.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import za.ac.cput.DTO.EnrollmentDTO;
+import za.ac.cput.DTO.EnrollmentRequest;
+import za.ac.cput.domain.Course;
+import za.ac.cput.domain.Customer;
 import za.ac.cput.domain.Enrollment;
+import za.ac.cput.repository.CourseRepository;
+import za.ac.cput.repository.customerRepository;
+import za.ac.cput.repository.EnrollmentRepository;
 import za.ac.cput.service.EnrollmentService;
 
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+@CrossOrigin(origins = "http://localhost:5173")
 @RestController
 @RequestMapping("/api/enrollments")
 public class EnrollmentController {
 
     private final EnrollmentService enrollmentService;
+    private final CourseRepository courseRepository;
+    private final customerRepository customerRepository;
+    private final EnrollmentRepository enrollmentRepository;
 
     @Autowired
-    public EnrollmentController(EnrollmentService enrollmentService) {
+    public EnrollmentController(
+            EnrollmentService enrollmentService,
+            CourseRepository courseRepository,
+            customerRepository customerRepository,
+            EnrollmentRepository enrollmentRepository
+    ) {
         this.enrollmentService = enrollmentService;
+        this.courseRepository = courseRepository;
+        this.customerRepository = customerRepository;
+        this.enrollmentRepository = enrollmentRepository;
     }
 
-    // Create new enrollment
-    @PostMapping
-    public ResponseEntity<EnrollmentDTO> createEnrollment(@RequestBody Enrollment enrollment) {
-        Enrollment savedEnrollment = enrollmentService.create(enrollment);
-        EnrollmentDTO dto = enrollmentService.toDTO(savedEnrollment);
-        return ResponseEntity.ok(dto);
+    @PostMapping("/enroll")
+    public ResponseEntity<?> enrollStudent(@RequestBody EnrollmentRequest request) {
+        Optional<Course> courseOpt = courseRepository.findByTitle(request.getCourseName());
+        if (courseOpt.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body("Course with name '" + request.getCourseName() + "' not found.");
+        }
+        Course course = courseOpt.get();
+
+        Optional<Customer> customerOpt = customerRepository.findByFirstNameAndLastName(
+                request.getFirstName(), request.getLastName()
+        );
+        if (customerOpt.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body("Customer not found.");
+        }
+        Customer customer = customerOpt.get();
+
+        if (enrollmentRepository.existsByCustomerAndCourse(customer, course)) {
+            return ResponseEntity.status(HttpStatus.CONFLICT)
+                    .body("Customer is already enrolled in this course.");
+        }
+
+        Enrollment enrollment = new Enrollment();
+        enrollment.setCustomer(customer);
+        enrollment.setCourse(course);
+        enrollment.setStatus(Enrollment.Status.PENDING);
+        enrollmentRepository.save(enrollment);
+
+        return ResponseEntity.ok("Enrollment successful.");
     }
 
-    // Get enrollment by ID
     @GetMapping("/{id}")
     public ResponseEntity<EnrollmentDTO> getEnrollment(@PathVariable Long id) {
         Optional<Enrollment> enrollment = enrollmentService.read(id);
@@ -39,16 +81,14 @@ public class EnrollmentController {
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
-    // Get all enrollments
     @GetMapping
     public List<EnrollmentDTO> getAllEnrollments() {
-        List<Enrollment> enrollments = enrollmentService.getAll();
-        return enrollments.stream()
+        return enrollmentService.getAll()
+                .stream()
                 .map(enrollmentService::toDTO)
                 .collect(Collectors.toList());
     }
 
-    // Approve enrollment
     @PutMapping("/{id}/approve")
     public ResponseEntity<EnrollmentDTO> approveEnrollment(@PathVariable Long id) {
         Optional<Enrollment> enrollment = enrollmentService.read(id);
@@ -61,7 +101,6 @@ public class EnrollmentController {
         return ResponseEntity.notFound().build();
     }
 
-    // Reject enrollment
     @PutMapping("/{id}/reject")
     public ResponseEntity<EnrollmentDTO> rejectEnrollment(@PathVariable Long id) {
         Optional<Enrollment> enrollment = enrollmentService.read(id);
