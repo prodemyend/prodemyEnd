@@ -2,6 +2,7 @@ package za.ac.cput.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import za.ac.cput.DTO.EnrollmentDTO;
 import za.ac.cput.domain.Enrollment;
 import za.ac.cput.domain.Customer;
 import za.ac.cput.domain.Course;
@@ -32,26 +33,39 @@ public class EnrollmentService implements IEnrollmentService {
 
     @Override
     public Enrollment create(Enrollment enrollment) {
-        // Fetch customer from DB
-        Customer customer = customerRepository.findByFirstName(enrollment.getCustomer().getFirstName())
-                .orElseThrow(() -> new IllegalArgumentException("Customer not found: " + enrollment.getCustomer().getFirstName()));
+        if (enrollment.getCustomer() == null || enrollment.getCustomer().getId() == null) {
+            throw new IllegalArgumentException("Customer ID must be provided");
+        }
+        if (enrollment.getCourse() == null || enrollment.getCourse().getId() == null) {
+            throw new IllegalArgumentException("Course ID must be provided");
+        }
 
-        // Fetch course from DB
-        Course course = courseRepository.findByTitle(enrollment.getCourse().getTitle())
-                .orElseThrow(() -> new IllegalArgumentException("Course not found: " + enrollment.getCourse().getTitle()));
+        // Fetch customer from DB by ID
+        Customer customer = customerRepository.findById(enrollment.getCustomer().getId())
+                .orElseThrow(() -> new IllegalArgumentException(
+                        "Customer not found with ID: " + enrollment.getCustomer().getId()
+                ));
+
+        // Fetch course from DB by ID
+        Course course = courseRepository.findById(enrollment.getCourse().getId())
+                .orElseThrow(() -> new IllegalArgumentException(
+                        "Course not found with ID: " + enrollment.getCourse().getId()
+                ));
 
         // Check if already enrolled
         if (enrollmentRepository.existsByCustomerAndCourse(customer, course)) {
             throw new IllegalStateException("Customer is already enrolled in this course.");
         }
 
-        // Set fetched entities
-        enrollment.setCustomer(customer);
-        enrollment.setCourse(course);
-        enrollment.setStatus(Enrollment.Status.PENDING);
+        // Create new enrollment with safe data
+        Enrollment newEnrollment = new Enrollment();
+        newEnrollment.setCustomer(customer);
+        newEnrollment.setCourse(course);
+        newEnrollment.setStatus(Enrollment.Status.PENDING);
 
-        return enrollmentRepository.save(enrollment);
+        return enrollmentRepository.save(newEnrollment);
     }
+
 
     @Override
     public Optional<Enrollment> read(Long id) {
@@ -106,4 +120,21 @@ public class EnrollmentService implements IEnrollmentService {
         enrollment.setStatus(Enrollment.Status.REJECTED);
         return enrollmentRepository.save(enrollment);
     }
+    public EnrollmentDTO toDTO(Enrollment enrollment) {
+        String fullName = (enrollment.getCustomer().getFirstName() + " " + enrollment.getCustomer().getLastName()).trim();
+        return new EnrollmentDTO(
+                enrollment.getId(),
+                fullName,
+                enrollment.getCourse().getTitle(),
+                enrollment.getStatus().name()
+        );
+    }
+    public List<EnrollmentDTO> getAllDTOs() {
+        return enrollmentRepository.findAll()
+                .stream()
+                .map(this::toDTO)
+                .toList();
+    }
+
+
 }
