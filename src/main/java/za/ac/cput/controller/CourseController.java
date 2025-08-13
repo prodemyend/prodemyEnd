@@ -88,9 +88,20 @@ public class CourseController {
 
         Course course = courseOpt.get();
         byte[] file = course.getImage();
+
         HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_OCTET_STREAM); // or detect actual type
+
+        // Option 1: detect type by first few bytes (simple)
+        if (file.length > 4 && file[0] == (byte)0xFF && file[1] == (byte)0xD8) {
+            headers.setContentType(MediaType.IMAGE_JPEG);
+        } else if (file.length > 4 && file[0] == (byte)0x89 && file[1] == (byte)0x50) {
+            headers.setContentType(MediaType.IMAGE_PNG);
+        } else {
+            headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
+        }
+
         return new ResponseEntity<>(file, headers, HttpStatus.OK);
     }
+
 
 }
