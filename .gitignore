@@ -36,3 +36,10 @@ build/
 
 ### Mac OS ###
 .DS_Store
+
+# Ignore environment variables file
+.env
+
+# Ignore local properties file (if you want to keep credentials there)
+application.properties
+application-local.properties
