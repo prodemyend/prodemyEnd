@@ -87,9 +87,15 @@ public class adminController {
     }
 
     @DeleteMapping("/delete/{id}")
-    public void delete(@PathVariable long id) {
-        adminService.delete(id);
+    public ResponseEntity<?> delete(@PathVariable("id") long id) {
+        try {
+            adminService.delete(id);  // attempt deletion
+            return ResponseEntity.ok("Admin deleted successfully");
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
+
 
     @GetMapping("/ping")
     public String ping() {
