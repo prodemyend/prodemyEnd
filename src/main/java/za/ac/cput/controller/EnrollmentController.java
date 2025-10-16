@@ -112,4 +112,24 @@ public class EnrollmentController {
         }
         return ResponseEntity.notFound().build();
     }
+
+    @PutMapping("/{id}/reset")
+    public ResponseEntity<?> resetEnrollment(@PathVariable Long id) {
+        try {
+            Optional<Enrollment> enrollmentOpt = enrollmentService.read(id);
+            if (enrollmentOpt.isEmpty()) {
+                return ResponseEntity.notFound().build();
+            }
+
+            Enrollment enrollment = enrollmentOpt.get();
+            enrollment.setStatus(Enrollment.Status.PENDING);
+            Enrollment updated = enrollmentService.update(enrollment);
+            EnrollmentDTO dto = enrollmentService.toDTO(updated);
+
+            return ResponseEntity.ok(dto);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Failed to reset enrollment: " + e.getMessage());
+        }
+    }
 }
