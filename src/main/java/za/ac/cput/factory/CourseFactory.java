@@ -5,7 +5,7 @@ import za.ac.cput.util.Helper;
 
 public class CourseFactory {
 
-    public static Course buildCourse(String title, String description, byte[] image) {
+    public static Course buildCourse(String title, String description, byte[] image, String contentType) {
         if (Helper.isNullorEmpty(title)
                 || Helper.isNullorEmpty(description)
                 || image == null
@@ -17,6 +17,7 @@ public class CourseFactory {
                 .setTitle(title)
                 .setDescription(description)
                 .setImage(image)
+                .setContentType(contentType) // ADD THIS
                 .build();
     }
 }

@@ -16,7 +16,9 @@ public class Course {
 
     @Lob
     @Column(length = 100000)
-    private byte[] image; // required like Van.image
+    private byte[] image;
+
+    private String contentType; // ADD THIS FIELD
 
     protected Course() {}
 
@@ -25,6 +27,7 @@ public class Course {
         this.title = builder.title;
         this.description = builder.description;
         this.image = builder.image;
+        this.contentType = builder.contentType; // ADD THIS
     }
 
     public Long getId() {
@@ -43,6 +46,14 @@ public class Course {
         return image;
     }
 
+    public String getContentType() { // ADD THIS GETTER
+        return contentType;
+    }
+
+    public void setContentType(String contentType) { // ADD THIS SETTER
+        this.contentType = contentType;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -52,12 +63,13 @@ public class Course {
         return Objects.equals(id, course.id)
                 && Objects.equals(title, course.title)
                 && Objects.equals(description, course.description)
-                && Arrays.equals(image, course.image);
+                && Arrays.equals(image, course.image)
+                && Objects.equals(contentType, course.contentType); // ADD THIS
     }
 
     @Override
     public int hashCode() {
-        int result = Objects.hash(id, title, description);
+        int result = Objects.hash(id, title, description, contentType); // UPDATE THIS
         result = 31 * result + Arrays.hashCode(image);
         return result;
     }
@@ -69,6 +81,7 @@ public class Course {
                 ", title='" + title + '\'' +
                 ", description='" + description + '\'' +
                 ", image=" + Arrays.toString(image) +
+                ", contentType='" + contentType + '\'' + // ADD THIS
                 '}';
     }
 
@@ -77,6 +90,7 @@ public class Course {
         private String title;
         private String description;
         private byte[] image;
+        private String contentType; // ADD THIS
 
         public Builder setId(Long id) {
             this.id = id;
@@ -98,11 +112,17 @@ public class Course {
             return this;
         }
 
+        public Builder setContentType(String contentType) { // ADD THIS METHOD
+            this.contentType = contentType;
+            return this;
+        }
+
         public Builder copy(Course course) {
             this.id = course.id;
             this.title = course.title;
             this.description = course.description;
             this.image = course.image;
+            this.contentType = course.contentType; // ADD THIS
             return this;
         }
 
