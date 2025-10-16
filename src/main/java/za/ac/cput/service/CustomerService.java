@@ -11,27 +11,16 @@ import java.util.List;
 public class CustomerService implements ICustomerService {
 
     private final customerRepository repository;
-    @Autowired
 
+    @Autowired
     public CustomerService(customerRepository repository) {
         this.repository = repository;
     }
 
-
-
-
     @Override
     public Customer create(Customer customer) {
-        Customer newCustomer = new Customer.Builder()
-                .setId(customer.getId())
-                .SetfirstName(customer.getFirstName())
-                .SetlastName(customer.getLastName())
-                .SetEmail(customer.getEmail())
-                .SetPassword(customer.getPassword())
-                .SetRole("USER")
-                .build();
-
-        return repository.save(newCustomer);
+        // Use the customer directly, no need to rebuild with Builder
+        return repository.save(customer);
     }
 
     @Override
@@ -42,16 +31,8 @@ public class CustomerService implements ICustomerService {
     @Override
     public Customer update(Customer customer) {
         if (repository.existsById(customer.getId())) {
-            Customer updatedCustomer = new Customer.Builder()
-                    .setId(customer.getId())
-                    .SetfirstName(customer.getFirstName())
-                    .SetlastName(customer.getLastName())
-                    .SetEmail(customer.getEmail())
-                    .SetPassword(customer.getPassword())
-                    .SetRole("USER")
-                    .build();
-
-            return repository.save(updatedCustomer);
+            // Use the customer directly, no need to rebuild with Builder
+            return repository.save(customer);
         } else {
             System.out.println("Customer with ID " + customer.getId() + " does not exist.");
             return null;
@@ -79,7 +60,7 @@ public class CustomerService implements ICustomerService {
     }
 
     public Customer findByEmail(String email) {
-        Customer foundCustomer = repository.findByEmail(email);
-        return null;
+        // Fixed: Return the actual found customer instead of always null
+        return repository.findByEmail(email);
     }
 }
