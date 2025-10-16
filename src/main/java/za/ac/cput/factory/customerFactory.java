@@ -18,11 +18,11 @@ public class customerFactory {
         }
 
         return new Customer.Builder()
-                .SetfirstName(firstName)
-                .SetlastName(lastName)
-                .SetEmail(email)
-                .SetPassword(password)
-                .SetRole("USER")
+                .setFirstName(firstName)    // Fixed method name
+                .setLastName(lastName)      // Fixed method name
+                .setEmail(email)           // Fixed method name
+                .setPassword(password)     // Fixed method name
+                .setRole("USER")           // Fixed method name
                 .build();
     }
 }

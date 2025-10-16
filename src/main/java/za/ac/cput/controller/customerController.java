@@ -20,14 +20,10 @@ public class customerController {
     private final customerRepository customerRepository;
 
     @Autowired
-
     public customerController(CustomerService customerService, customerRepository customerRepository) {
         this.customerService = customerService;
         this.customerRepository = customerRepository;
     }
-
-
-
 
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody Customer customerInput) {
@@ -43,6 +39,12 @@ public class customerController {
                 return ResponseEntity.badRequest().body("Invalid input fields");
             }
 
+            // Check if email already exists
+            Customer existingCustomer = customerRepository.findByEmail(customerInput.getEmail());
+            if (existingCustomer != null) {
+                return ResponseEntity.badRequest().body("Email already exists");
+            }
+
             Customer saved = customerService.create(newCustomer);
             return ResponseEntity.ok(saved);
 
@@ -54,7 +56,7 @@ public class customerController {
     @PostMapping("/login")
     public ResponseEntity<?> handleLogin(@RequestBody Customer loginInput) {
         try {
-            Customer customer = customerRepository.findByEmail(loginInput.getEmail());
+            Customer customer = customerService.findByEmail(loginInput.getEmail());
 
             if (customer == null || !customer.getPassword().equals(loginInput.getPassword())) {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
@@ -69,25 +71,61 @@ public class customerController {
         }
     }
 
-
     @GetMapping("/all")
     public List<Customer> getAll() {
         return customerService.getAll();
     }
 
     @GetMapping("/read/{id}")
-    public Customer read(@PathVariable Long id) {
-        return customerService.read(id);
+    public ResponseEntity<Customer> read(@PathVariable Long id) {
+        Customer customer = customerService.read(id);
+        if (customer == null) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(customer);
     }
 
-    @PostMapping("/update")
-    public Customer update(@RequestBody Customer customer) {
-        return customerService.update(customer);
+    @PutMapping("/update")  // Changed from @PostMapping to @PutMapping
+    public ResponseEntity<?> update(@RequestBody Customer customer) {
+        try {
+            // Check if customer exists
+            Customer existingCustomer = customerService.read(customer.getId());
+            if (existingCustomer == null) {
+                return ResponseEntity.notFound().build();
+            }
+
+            // Check if email is being changed and if it already exists for another user
+            if (!existingCustomer.getEmail().equals(customer.getEmail())) {
+                Customer customerWithEmail = customerService.findByEmail(customer.getEmail());
+                if (customerWithEmail != null && !customerWithEmail.getId().equals(customer.getId())) {
+                    return ResponseEntity.badRequest().body("Email already exists");
+                }
+            }
+
+            Customer updated = customerService.update(customer);
+            if (updated == null) {
+                return ResponseEntity.notFound().build();
+            }
+            return ResponseEntity.ok(updated);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Update error: " + e.getMessage());
+        }
     }
 
     @DeleteMapping("/delete/{id}")
-    public void delete(@PathVariable long id) {
-        customerService.delete(id);
+    public ResponseEntity<?> delete(@PathVariable Long id) {  // Changed from long to Long
+        try {
+            Customer customer = customerService.read(id);
+            if (customer == null) {
+                return ResponseEntity.notFound().build();
+            }
+            customerService.delete(id);
+            return ResponseEntity.ok().build();
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Delete error: " + e.getMessage());
+        }
     }
 
     @GetMapping("/ping")

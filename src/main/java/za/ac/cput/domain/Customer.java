@@ -92,30 +92,32 @@ public class Customer {
         private String password;
         private String role;
 
-
         public Builder setId(Long id) {
             this.id = id;
             return this;
         }
 
-        public Builder SetfirstName(String firstName) {
+        public Builder setFirstName(String firstName) {  // Fixed: setFirstName
             this.firstName = firstName;
             return this;
         }
-        public Builder SetlastName(String lastName) {
+
+        public Builder setLastName(String lastName) {   // Fixed: setLastName
             this.lastName = lastName;
             return this;
         }
-        public Builder SetEmail(String email) {
+
+        public Builder setEmail(String email) {         // Fixed: setEmail
             this.email = email;
             return this;
         }
-        public Builder SetPassword(String password) {
+
+        public Builder setPassword(String password) {   // Fixed: setPassword
             this.password = password;
             return this;
         }
 
-        public Builder SetRole(String role) {
+        public Builder setRole(String role) {           // Fixed: setRole
             this.role = role;
             return this;
         }
@@ -133,6 +135,5 @@ public class Customer {
         public Customer build() {
             return new Customer(this);
         }
-    }
-}
+    }}
 
