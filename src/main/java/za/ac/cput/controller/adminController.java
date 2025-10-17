@@ -86,6 +86,7 @@ public class adminController {
         return adminService.update(admin);
     }
 
+
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<?> delete(@PathVariable("id") long id) {
         try {
