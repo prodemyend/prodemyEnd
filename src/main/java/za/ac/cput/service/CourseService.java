@@ -56,7 +56,7 @@ public class CourseService implements ICourseService {
     }
 
     @Override
-    public void delete(Long id) {
+    public boolean delete(Long id) {
         try {
             if (!repository.existsById(id)) {
                 throw new IllegalArgumentException("Course with ID " + id + " does not exist");
@@ -65,6 +65,7 @@ public class CourseService implements ICourseService {
         } catch (Exception e) {
             throw new RuntimeException("Error deleting course: " + e.getMessage(), e);
         }
+        return false;
     }
 
     @Override

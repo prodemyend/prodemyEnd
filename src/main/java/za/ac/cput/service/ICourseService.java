@@ -9,6 +9,6 @@ public interface ICourseService {
     Course create(Course course);
     Optional<Course> read(Long id);
     Course update(Course course);
-    void delete(Long id);
+    boolean delete(Long id);
     List<Course> getAll();
 }

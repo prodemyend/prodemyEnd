@@ -94,7 +94,6 @@ public class customerController {
                 return ResponseEntity.notFound().build();
             }
 
-            // Check if email is being changed and if it already exists for another user
             if (!existingCustomer.getEmail().equals(customer.getEmail())) {
                 Customer customerWithEmail = customerService.findByEmail(customer.getEmail());
                 if (customerWithEmail != null && !customerWithEmail.getId().equals(customer.getId())) {
@@ -114,7 +113,7 @@ public class customerController {
     }
 
     @DeleteMapping("/delete/{id}")
-    public ResponseEntity<?> delete(@PathVariable Long id) {  // Changed from long to Long
+    public ResponseEntity<?> delete(@PathVariable Long id) {
         try {
             Customer customer = customerService.read(id);
             if (customer == null) {
